@@ -141,3 +141,13 @@ export interface AccessTokenResponse {
   expires_in: number;
   refresh_token?: string;
 }
+
+// Replace any with proper types
+export interface SpotifyPlayerCallback {
+  (response: { device_id: string }): void;
+}
+
+export interface SpotifyPlayerErrorCallback {
+  (error: Error): void;
+}
+

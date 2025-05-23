@@ -1,16 +1,22 @@
 
 import React from 'react';
-import { SpotifyTrack, SpotifyPlaylist } from '../types';
-import NowPlaying from './NowPlaying'; // This might move to PlayerControls or App layout
+import PlaylistList from './PlaylistList';
+import TrackList from './TrackList';
+import { SpotifyPlaylist } from '@/app/types';
 
 interface MainContentProps {
-  currentTrack: SpotifyTrack | null; // For NowPlaying, might be better placed
-  playlists: SpotifyPlaylist[]; // Example, could be tracks of selected playlist
-  onPlayTrack: (trackUri: string) => void;
-  onPlayPlaylist: (playlistUri: string) => void; // Added for consistency
+  playlists: SpotifyPlaylist[];
+  onPlayPlaylist: (playlistId: string) => void;
+  // We'll keep these in the interface but mark them as optional
+  currentTrack?: SpotifyTrack | null;
+  onPlayTrack?: (trackUri: string) => void;
 }
 
-const MainContent: React.FC<MainContentProps> = ({ currentTrack, playlists, onPlayTrack, onPlayPlaylist }) => {
+const MainContent: React.FC<MainContentProps> = ({
+  playlists,
+  onPlayPlaylist,
+  // Not destructuring these since we're not using them
+}) => {
   // This component would typically display the content of a selected playlist,
   // search results, or album details. For now, it's a placeholder.
   // The NowPlaying details are more likely part of the bottom PlayerControls bar.
@@ -21,22 +27,22 @@ const MainContent: React.FC<MainContentProps> = ({ currentTrack, playlists, onPl
       <p className="text-neutral-300 mb-8">
         Select a playlist from the sidebar to start listening. The player controls will appear at the bottom once playback begins.
       </p>
-      
+
       {/* Example: Displaying playlists in main content as well */}
       {playlists.length > 0 && (
         <div>
           <h3 className="text-2xl font-semibold text-white mb-4">Your Playlists</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
             {playlists.map(playlist => (
-              <button 
-                key={playlist.id} 
+              <button
+                key={playlist.id}
                 onClick={() => onPlayPlaylist(playlist.uri)}
                 className="bg-neutral-700 p-4 rounded-lg hover:bg-neutral-600 transition-colors group"
               >
                 {playlist.images && playlist.images[0] ? (
-                  <img 
-                    src={playlist.images[0].url} 
-                    alt={playlist.name} 
+                  <img
+                    src={playlist.images[0].url}
+                    alt={playlist.name}
                     className="w-full aspect-square object-cover rounded-md mb-3"
                   />
                 ) : (
@@ -64,3 +70,5 @@ const MainContent: React.FC<MainContentProps> = ({ currentTrack, playlists, onPl
 };
 
 export default MainContent;
+
+

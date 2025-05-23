@@ -28,38 +28,39 @@ const App: React.FC = () => {
   } = useSpotifyPlayer(token);
 
   useEffect(() => {
-    if (token && !user) {
-      const fetchUserData = async () => {
+    if (!token) return;
+
+    const fetchUserData = async () => {
+      try {
         setIsLoadingData(true);
-        try {
-          const userData = await spotifyApi.getUserProfile(token);
-          setUser(userData);
-          const userPlaylists = await spotifyApi.getUserPlaylists(token);
-          setPlaylists(userPlaylists.items);
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-          // Potentially logout or handle token expiry
-          if ((error as any).status === 401) {
-            logout(); // Token might be invalid
-          }
-        } finally {
-          setIsLoadingData(false);
-        }
-      };
-      fetchUserData();
-    }
-  }, [token, user, logout]);
+        const userData = await spotifyApi.getUserProfile(token);
+        setUser(userData);
+
+        const playlistsData = await spotifyApi.getUserPlaylists(token);
+        setPlaylists(playlistsData.items); // Extract the items array from the paging object
+        setIsLoadingData(false);
+      } catch (error: unknown) {
+        console.error('Error fetching user data:', error);
+        setIsLoadingData(false);
+      }
+    };
+
+    fetchUserData();
+  }, [token]);
 
   useEffect(() => {
     if (sdkTrack) {
       setCurrentTrack({
         id: sdkTrack.id || '',
         name: sdkTrack.name,
-        artists: sdkTrack.artists.map((a: { name: any; }) => ({ name: a.name, id: '' })), // Simplified
+        artists: sdkTrack.artists.map((a: { name: string; id?: string }) => ({
+          name: a.name,
+          id: a.id || ''
+        })),
         album: {
           name: sdkTrack.album.name,
           images: sdkTrack.album.images,
-          id: '' // Simplified
+          id: sdkTrack.album.id || ''
         },
         uri: sdkTrack.uri,
         duration_ms: sdkTrack.duration_ms,
@@ -174,3 +175,8 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+
+
+
+

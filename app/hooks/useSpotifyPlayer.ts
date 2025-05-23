@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { SpotifyWebPlaybackSDKPlayer, SpotifyWebPlaybackState, SpotifyWebPlaybackTrack } from '../types';
+import { SpotifyWebPlaybackSDKPlayer, SpotifyWebPlaybackState, SpotifyWebPlaybackTrack } from '@/app/types';
 
 // Extend Window interface for Spotify objects
 declare global {
@@ -51,7 +51,7 @@ export const useSpotifyPlayer = (accessToken: string | null) => {
         console.log('Spotify SDK not loaded or no access token.');
         return;
       }
-      
+
       if (playerRef.current) {
         console.log('Player already initialized.');
         // Potentially update token if it changed? SDK handles this internally via getOAuthToken
@@ -113,14 +113,14 @@ export const useSpotifyPlayer = (accessToken: string | null) => {
           // Consider if this device is still the active one.
           return;
         }
-        
+
         setCurrentTrack(state.track_window.current_track);
         setIsPaused(state.paused);
         setPosition(state.position);
         setDuration(state.duration);
         console.log('Player state changed:', state);
       });
-      
+
       player.connect().then(success => {
         if (success) {
           console.log('The Web Playback SDK successfully connected to Spotify!');
@@ -133,18 +133,18 @@ export const useSpotifyPlayer = (accessToken: string | null) => {
 
       playerRef.current = player;
     };
-    
+
     const handleSdkReady = () => {
       console.log('spotify-sdk-ready event received');
       initializePlayer();
     };
 
     if (window.Spotify) { // SDK might be loaded already
-       initializePlayer();
+      initializePlayer();
     } else { // Wait for the SDK to load
       document.addEventListener('spotify-sdk-ready', handleSdkReady);
     }
-    
+
     return () => {
       document.removeEventListener('spotify-sdk-ready', handleSdkReady);
       if (playerRef.current) {
@@ -155,14 +155,14 @@ export const useSpotifyPlayer = (accessToken: string | null) => {
       setIsPlayerReady(false);
       setDeviceId(null);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken]); // Re-initialize if accessToken changes
 
-  return { 
-    player: playerRef.current, 
-    isPlayerReady, 
-    deviceId, 
-    current_track, 
+  return {
+    player: playerRef.current,
+    isPlayerReady,
+    deviceId,
+    current_track,
     is_paused,
     position,
     duration,

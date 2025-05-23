@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { SpotifyUser, SpotifyPlaylist } from '../types';
+import { SpotifyUser, SpotifyPlaylist } from '@/app/types';
 import SpotifyLogo from './icons/SpotifyLogo';
 
 interface SidebarProps {
@@ -15,8 +15,8 @@ const Sidebar: React.FC<SidebarProps> = ({ user, playlists, onPlayPlaylist, onLo
     <div className="w-64 bg-black p-6 flex flex-col space-y-6 h-full overflow-y-auto">
       <div>
         <div className="flex items-center space-x-3 mb-6">
-           <SpotifyLogo className="w-10 h-10 text-green-500" />
-           <h1 className="text-2xl font-bold text-white">Spotify PWA</h1>
+          <SpotifyLogo className="w-10 h-10 text-green-500" />
+          <h1 className="text-2xl font-bold text-white">Spotify PWA</h1>
         </div>
         {user && (
           <div className="mb-6 p-3 bg-neutral-800 rounded-lg">

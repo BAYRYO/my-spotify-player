@@ -1,6 +1,6 @@
 
 import { SPOTIFY_API_BASE_URL } from '../constants';
-import { SpotifyUser, SpotifyPagingObject, SpotifyPlaylist, SpotifyTrack } from '../types';
+import { SpotifyUser, SpotifyPagingObject, SpotifyPlaylist, SpotifyTrack } from '@/app/types';
 
 const makeRequest = async <T,>(endpoint: string, token: string, options?: RequestInit): Promise<T> => {
   const response = await fetch(`${SPOTIFY_API_BASE_URL}${endpoint}`, {
@@ -93,7 +93,7 @@ export const spotifyApi = {
       body: JSON.stringify({ device_ids: deviceIds, play }),
     });
   },
-  
+
   search: async <T,>(token: string, query: string, type: string | string[], limit: number = 20): Promise<T> => {
     const typeString = Array.isArray(type) ? type.join(',') : type;
     const params = new URLSearchParams({
@@ -104,3 +104,4 @@ export const spotifyApi = {
     return makeRequest<T>(`/search?${params.toString()}`, token);
   },
 };
+

@@ -1,12 +1,24 @@
 
 import React from 'react';
 
-interface IconProps extends React.SVGProps<SVGSVGElement> {}
+interface PauseIconProps {
+  className?: string;
+}
 
-const PauseIcon: React.FC<IconProps> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
-    <path d="M6 4h4v16H6zm8 0h4v16h-4z" />
-  </svg>
-);
+const PauseIcon: React.FC<PauseIconProps> = ({ className }) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" fill="currentColor" />
+    </svg>
+  );
+};
 
 export default PauseIcon;
+

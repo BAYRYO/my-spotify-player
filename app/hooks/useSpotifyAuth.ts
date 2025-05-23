@@ -1,44 +1,75 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { generateCodeVerifier, generateCodeChallenge } from '../utils/pkce';
-import { 
-  CLIENT_ID, 
-  REDIRECT_URI, 
-  SPOTIFY_AUTH_URL, 
-  SPOTIFY_TOKEN_URL, 
+import { generateCodeVerifier, generateCodeChallenge } from '@/app/utils/pkce';
+import {
+  CLIENT_ID,
+  REDIRECT_URI,
+  SPOTIFY_AUTH_URL,
+  SPOTIFY_TOKEN_URL,
   SPOTIFY_SCOPES,
   PKCE_LS_VERIFIER_KEY,
   SPOTIFY_LS_TOKEN_KEY,
   SPOTIFY_LS_REFRESH_TOKEN_KEY,
   SPOTIFY_LS_EXPIRES_AT_KEY
 } from '../constants';
-import { AccessTokenResponse } from '../types';
+import { AccessTokenResponse } from '@/app/types';
+
+// Helper function to safely access localStorage
+const getLocalStorageItem = (key: string): string | null => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem(key);
+  }
+  return null;
+};
+
+// Helper function to safely set localStorage
+const setLocalStorageItem = (key: string, value: string): void => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(key, value);
+  }
+};
+
+// Helper function to safely remove localStorage item
+const removeLocalStorageItem = (key: string): void => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(key);
+  }
+};
 
 export const useSpotifyAuth = () => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem(SPOTIFY_LS_TOKEN_KEY));
-  const [refreshToken, setRefreshToken] = useState<string | null>(localStorage.getItem(SPOTIFY_LS_REFRESH_TOKEN_KEY));
-  const [expiresAt, setExpiresAt] = useState<number | null>(Number(localStorage.getItem(SPOTIFY_LS_EXPIRES_AT_KEY)));
+  const [token, setToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Initialize state from localStorage on client-side only
+  useEffect(() => {
+    setToken(getLocalStorageItem(SPOTIFY_LS_TOKEN_KEY));
+    setRefreshToken(getLocalStorageItem(SPOTIFY_LS_REFRESH_TOKEN_KEY));
+    const storedExpiresAt = getLocalStorageItem(SPOTIFY_LS_EXPIRES_AT_KEY);
+    setExpiresAt(storedExpiresAt ? Number(storedExpiresAt) : null);
+    setLoading(false);
+  }, []);
 
   const storeTokenData = useCallback((data: AccessTokenResponse) => {
     const newExpiresAt = Date.now() + data.expires_in * 1000;
-    localStorage.setItem(SPOTIFY_LS_TOKEN_KEY, data.access_token);
+    setLocalStorageItem(SPOTIFY_LS_TOKEN_KEY, data.access_token);
     setToken(data.access_token);
     if (data.refresh_token) {
-      localStorage.setItem(SPOTIFY_LS_REFRESH_TOKEN_KEY, data.refresh_token);
+      setLocalStorageItem(SPOTIFY_LS_REFRESH_TOKEN_KEY, data.refresh_token);
       setRefreshToken(data.refresh_token);
     }
-    localStorage.setItem(SPOTIFY_LS_EXPIRES_AT_KEY, newExpiresAt.toString());
+    setLocalStorageItem(SPOTIFY_LS_EXPIRES_AT_KEY, newExpiresAt.toString());
     setExpiresAt(newExpiresAt);
   }, []);
 
   const login = useCallback(async () => {
-    if (CLIENT_ID === 'YOUR_SPOTIFY_CLIENT_ID') {
+    if (!CLIENT_ID) {
       alert('Please configure your Spotify Client ID in constants.ts');
       return;
     }
     const verifier = generateCodeVerifier(128);
-    localStorage.setItem(PKCE_LS_VERIFIER_KEY, verifier);
+    setLocalStorageItem(PKCE_LS_VERIFIER_KEY, verifier);
     const challenge = await generateCodeChallenge(verifier);
 
     const params = new URLSearchParams({
@@ -56,12 +87,10 @@ export const useSpotifyAuth = () => {
     setToken(null);
     setRefreshToken(null);
     setExpiresAt(null);
-    localStorage.removeItem(SPOTIFY_LS_TOKEN_KEY);
-    localStorage.removeItem(SPOTIFY_LS_REFRESH_TOKEN_KEY);
-    localStorage.removeItem(SPOTIFY_LS_EXPIRES_AT_KEY);
-    localStorage.removeItem(PKCE_LS_VERIFIER_KEY);
-    // Optionally, redirect to a logged out page or Spotify logout
-    // window.location.href = REDIRECT_URI; // Reload to clear state
+    removeLocalStorageItem(SPOTIFY_LS_TOKEN_KEY);
+    removeLocalStorageItem(SPOTIFY_LS_REFRESH_TOKEN_KEY);
+    removeLocalStorageItem(SPOTIFY_LS_EXPIRES_AT_KEY);
+    removeLocalStorageItem(PKCE_LS_VERIFIER_KEY);
   }, []);
 
   const refreshAccessToken = useCallback(async () => {
@@ -69,7 +98,7 @@ export const useSpotifyAuth = () => {
       logout(); // No refresh token, force logout
       return null;
     }
-    
+
     console.log('Attempting to refresh token');
     try {
       const response = await fetch(SPOTIFY_TOKEN_URL, {
@@ -109,7 +138,7 @@ export const useSpotifyAuth = () => {
 
       if (code) {
         setLoading(true);
-        const verifier = localStorage.getItem(PKCE_LS_VERIFIER_KEY);
+        const verifier = getLocalStorageItem(PKCE_LS_VERIFIER_KEY);
         if (!verifier) {
           console.error('Code verifier not found in local storage.');
           logout();
@@ -132,7 +161,7 @@ export const useSpotifyAuth = () => {
 
           // Clear the code from URL and verifier from local storage
           window.history.replaceState({}, document.title, window.location.pathname);
-          localStorage.removeItem(PKCE_LS_VERIFIER_KEY);
+          removeLocalStorageItem(PKCE_LS_VERIFIER_KEY);
 
           if (!response.ok) {
             throw new Error(`Failed to fetch token: ${response.statusText}`);
@@ -162,7 +191,7 @@ export const useSpotifyAuth = () => {
   }, []); // Run once on mount to handle redirect or initial token check.
 
   // Set up interval to check for token expiry
-   useEffect(() => {
+  useEffect(() => {
     if (!token || !expiresAt || !refreshToken) return;
 
     const checkInterval = setInterval(() => {
@@ -178,3 +207,5 @@ export const useSpotifyAuth = () => {
 
   return { token, login, logout, loading };
 };
+
+

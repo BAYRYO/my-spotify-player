@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { SpotifyPlaylist } from '../types';
+import { SpotifyPlaylist } from '@/app/types';
 
 interface PlaylistListProps {
   playlists: SpotifyPlaylist[];

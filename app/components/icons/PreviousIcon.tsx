@@ -1,12 +1,24 @@
 
 import React from 'react';
 
-interface IconProps extends React.SVGProps<SVGSVGElement> {}
+interface PreviousIconProps {
+  className?: string;
+}
 
-const PreviousIcon: React.FC<IconProps> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
-    <path d="M18 20L8 12l10-8v16zM6 4v16H4V4h2z" />
-  </svg>
-);
+const PreviousIcon: React.FC<PreviousIconProps> = ({ className }) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path d="M6 6L14.5 12L6 18V6ZM16 6V18H18V6H16Z" fill="currentColor" />
+    </svg>
+  );
+};
 
 export default PreviousIcon;
+

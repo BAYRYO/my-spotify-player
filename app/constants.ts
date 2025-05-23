@@ -1,11 +1,13 @@
 
 // IMPORTANT: Replace with your own Spotify App Client ID
-export const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
+export const CLIENT_ID = '3c5f16c71acd4fc1bb904086a786bb29';
 
 // IMPORTANT: This must match *exactly* one of the Redirect URIs you've 
 // configured in your Spotify App settings on the Spotify Developer Dashboard.
 // For local development, this is typically the URL where your app is running.
-export const REDIRECT_URI = window.location.origin + window.location.pathname;
+export const REDIRECT_URI = typeof window !== 'undefined'
+  ? window.location.origin + window.location.pathname
+  : 'http://localhost:3000'; // Fallback for SSR
 
 export const SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize';
 export const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
@@ -28,3 +30,4 @@ export const PKCE_LS_VERIFIER_KEY = 'pkce_code_verifier';
 export const SPOTIFY_LS_TOKEN_KEY = 'spotify_access_token';
 export const SPOTIFY_LS_REFRESH_TOKEN_KEY = 'spotify_refresh_token';
 export const SPOTIFY_LS_EXPIRES_AT_KEY = 'spotify_token_expires_at';
+

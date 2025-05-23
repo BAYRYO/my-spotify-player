@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { SpotifyTrack } from '../types';
+import { SpotifyTrack } from '@/app/types';
 
 interface NowPlayingProps {
   track: SpotifyTrack | null;
@@ -20,9 +20,9 @@ const NowPlaying: React.FC<NowPlayingProps> = ({ track }) => {
   return (
     <div className="p-4 bg-neutral-800 rounded-lg shadow-md flex items-center space-x-4">
       {track.album.images.length > 0 && (
-        <img 
-          src={track.album.images[0].url} 
-          alt={track.album.name} 
+        <img
+          src={track.album.images[0].url}
+          alt={track.album.name}
           className="w-24 h-24 rounded-md object-cover"
         />
       )}

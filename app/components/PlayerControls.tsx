@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { SpotifyTrack } from '../types';
+import { SpotifyTrack } from '@/app/types';
 import PlayIcon from './icons/PlayIcon';
 import PauseIcon from './icons/PauseIcon';
 import NextIcon from './icons/NextIcon';
@@ -73,7 +73,7 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
           <div className="h-1 bg-green-500 rounded-full" style={{ width: '30%' }}></div>
         </div> */}
       </div>
-      
+
       <div className="w-1/3 flex justify-end items-center">
         {/* Volume control placeholder */}
         {/* <div className="flex items-center space-x-2">
